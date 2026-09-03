@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ViaMagus GCC Intelligence — Thursday, 03 September 2026</title>
+<style>
+@font-face {
+  font-family: "system-serif";
+  src: local("Iowan Old Style"), local("Palatino Linotype"), local("Palatino"), local("Georgia");
+}
+
+:root {
+  --ink: #1c1a17;
+  --paper: #faf7f0;
+  --paper-card: #ffffff;
+  --rule: #d8cfbe;
+  --muted: #756b5a;
+  --navy: #16233f;
+  --navy-deep: #0d1626;
+  --gold: #b8862e;
+  --gold-soft: #f3e6c8;
+  --flame: #a3321f;
+  --flame-soft: #f6ded8;
+  --high: #1e7a34;
+  --high-soft: #e2f1e5;
+  --medium: #92620f;
+  --medium-soft: #faedd3;
+  --low: #a3321f;
+  --low-soft: #f8e4df;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+h1, h2, h3, .company, .brand h1 {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+}
+
+/* ---------- Masthead ---------- */
+
+.topbar {
+  background: var(--navy-deep);
+  background-image: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+  color: #f2ede2;
+  padding: 30px 36px 22px;
+  border-bottom: 4px solid var(--gold);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.brand .kicker {
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  font-size: 11px;
+  color: var(--gold);
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.brand .subtitle {
+  margin: 6px 0 0;
+  color: #c9c2b2;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.scan-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.btn {
+  border: 1px solid transparent;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.5; cursor: wait; }
+
+.btn-primary { background: var(--gold); color: var(--navy-deep); }
+.btn-secondary { background: transparent; color: #f2ede2; border-color: #5a6684; }
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12.5px;
+  color: #c9c2b2;
+  text-align: right;
+}
+
+/* ---------- Executive summary strip ---------- */
+
+.exec-summary {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px 20px 0;
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: left;
+}
+.stat .num {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1;
+}
+.stat .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ---------- Layout ---------- */
+
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 8px 20px 60px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  font-size: 16px;
+  padding: 60px 20px;
+  font-style: italic;
+}
+
+.error-state {
+  max-width: 640px;
+  margin: 60px auto;
+  padding: 28px 30px;
+  border: 1px solid var(--low);
+  background: var(--low-soft);
+  border-radius: 4px;
+  text-align: left;
+}
+.error-state h3 { margin-top: 0; color: var(--flame); }
+.error-state code {
+  display: block;
+  background: #fff;
+  padding: 8px 10px;
+  border-radius: 3px;
+  margin-top: 8px;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+section h2 {
+  font-size: 20px;
+  color: var(--navy);
+  border-bottom: 2px solid var(--rule);
+  padding-bottom: 8px;
+  margin: 30px 0 16px;
+  font-weight: 700;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--paper-card);
+  border: 1px solid var(--rule);
+  border-left: 5px solid var(--rule);
+  border-radius: 3px;
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(28, 26, 23, 0.06);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.card.priority-high { border-left-color: var(--flame); }
+.card.priority-relevant { border-left-color: var(--gold); }
+
+.card-head {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.signal-tag, .reliability-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.signal-tag {
+  background: var(--gold-soft);
+  color: #6b4f14;
+}
+
+.reliability-tag.High { background: var(--high-soft); color: var(--high); }
+.reliability-tag.Medium { background: var(--medium-soft); color: var(--medium); }
+.reliability-tag.LowUnverified { background: var(--low-soft); color: var(--low); }
+
+.card h3.company {
+  margin: 2px 0 3px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.card .location {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.field { margin-bottom: 10px; }
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+
+.field p { margin: 0; font-size: 14.5px; line-height: 1.55; }
+
+.also-reported {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.card-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.card-foot .source { font-weight: 700; color: var(--navy); }
+.card-foot .published { color: var(--muted); }
+
+.read-original {
+  margin-left: auto;
+  color: #fff;
+  background: var(--navy);
+  padding: 6px 14px;
+  border-radius: 3px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 12.5px;
+}
+.read-original:hover { background: var(--navy-deep); }
+
+.headline-note {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.report-footer {
+  max-width: 980px;
+  margin: 30px auto 0;
+  padding: 16px 20px 0;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ---------- Print ---------- */
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  .topbar { background: #fff !important; color: #000 !important; border-bottom: 2px solid #000; }
+  .brand .kicker, .brand .subtitle, .meta { color: #333 !important; }
+  .card { box-shadow: none; }
+  a.read-original { background: none; color: #000; text-decoration: underline; padding: 0; }
+  a.read-original::after { content: " (" attr(href) ")"; font-size: 10px; font-weight: 400; }
+  section { break-inside: auto; }
+  @page { margin: 1.5cm; }
+}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <p class="kicker">ViaMagus Technologies — Talent Intelligence</p>
+    <h1>GCC News Briefing</h1>
+    <p class="subtitle">Bangalore &amp; Hyderabad · Thursday, 03 September 2026</p>
+  </div>
+  <div class="scan-controls">
+    <button class="btn btn-primary no-print" onclick="window.print()">🖨 Print / Save as PDF</button>
+    
+    <div class="meta">
+      <span>Scanned: 03 Sep 2026, 02:33 UTC</span>
+      <span>Stories found: 15</span>
+    </div>
+    
+  </div>
+</header>
+
+
+
+<div class="exec-summary no-print">
+  <div class="stat"><div class="num">15</div><div class="label">Stories found</div></div>
+  <div class="stat"><div class="num">1</div><div class="label">High priority</div></div>
+  <div class="stat"><div class="num">9</div><div class="label">Bengaluru</div></div>
+  <div class="stat"><div class="num">6</div><div class="label">Hyderabad</div></div>
+</div>
+
+<main id="results">
+  
+
+  
+  <section>
+    <h2>🔥 High Priority</h2>
+    <div class="cards">
+      
+        
+        <article class="card priority-high">
+  <div class="card-head">
+    <span class="signal-tag">New GCC</span>
+    <span class="reliability-tag High">High</span>
+  </div>
+  <h3 class="company">Octave Intelligence</h3>
+  <p class="location">Hyderabad</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Octave Intelligence has inaugurated a 2-lakh-sq-ft technology centre in Hyderabad and plans to scale its workforce to 2,000 engineers across software, AI, data and cloud ...</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>A new GCC in Hyderabad is a potential hiring signal — Octave Intelligence may need to build out technology and engineering teams from the ground up, which could create technology hiring demand.</p>
+  </div>
+  
+  <div class="also-reported">Also reported by: Msn, Telangana Today, Thehansindia, Moneycontrol, The Hindu, Whalesbook, The Times of India</div>
+  
+  <div class="card-foot">
+    <span class="source">Business Standard</span>
+    <span class="published">Published: 26 Aug 2026</span>
+    <a class="read-original" href="https://www.business-standard.com/industry/news/companies-octave-intelligence-sets-up-gcc-in-hyderabad-to-scale-centre-to-2000-engineers-126082600587_1.html" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+    </div>
+  </section>
+  
+
+  
+  <section>
+    <h2>Relevant News</h2>
+    <div class="cards">
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Hiring Expansion</span>
+    <span class="reliability-tag Medium">Medium</span>
+  </div>
+  <h3 class="company">See headline <span class="headline-note">(company not confidently identified — see headline)</span></h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Salaries for AI-related jobs in India grew 23 per cent between 2024 and 2026, outpacing legacy technology roles, according to foundit. Bengaluru remains the highest-paying market, while Hyderabad is emerging as a key hub amid expanding GCC and product-engineering investments.</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This is a direct hiring signal — This company appears to be growing its technology workforce in Bengaluru, which may create additional recruitment demand.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Telangana Today</span>
+    <span class="published">Published: 02 Sep 2026</span>
+    <a class="read-original" href="https://telanganatoday.com/ai-jobs-in-india-see-23-pcsalary-growth-between-2024-and-2026-foundit-report" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Investment</span>
+    <span class="reliability-tag High">High</span>
+  </div>
+  <h3 class="company">TCS</h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Best Buy's Bengaluru-based India GCC has around 600 employees. The five-year deal, which covers the GCC operations as well as a wider technology services portfolio spanning data, analytics and ...</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This investment could translate into scaled-up technology operations for TCS in Bengaluru, which may increase hiring demand over time.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Moneycontrol</span>
+    <span class="published">Published: 01 Sep 2026</span>
+    <a class="read-original" href="https://www.moneycontrol.com/news/business/tcs-beats-accenture-to-win-best-buy-s-india-gcc-mandate-worth-rs-2-000-crore-14020438.html" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">GCC Expansion</span>
+    <span class="reliability-tag High">High</span>
+  </div>
+  <h3 class="company">See headline <span class="headline-note">(company not confidently identified — see headline)</span></h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Earnings calls and annual reports of hotel companies show that GCC-led corporate travel is supporting weekday occupancy and room rates in Bengaluru, Hyderabad and Pune, even as geopolitical disruption ...</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This expansion could increase This company's technology hiring demand in Bengaluru, making it worth approaching about talent needs.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Moneycontrol</span>
+    <span class="published">Published: 01 Sep 2026</span>
+    <a class="read-original" href="https://www.moneycontrol.com/news/business/hotel-operators-see-gcc-expansion-driving-demand-in-it-hubs-cushioning-fall-in-foreign-arrivals-14019979.html" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Technology Expansion</span>
+    <span class="reliability-tag LowUnverified">⚠️ Low / Unverified</span>
+  </div>
+  <h3 class="company">See headline <span class="headline-note">(company not confidently identified — see headline)</span></h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Bengaluru is fast becoming the GCC capital of the country, with new global companies setting up almost every month, and the ripple effect is already reshaping the city's job market and property prices ...</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This suggests This company is growing its technology footprint in Bengaluru, which could create hiring opportunities worth monitoring.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Tradebrains</span>
+    <span class="published">Published: 31 Aug 2026</span>
+    <a class="read-original" href="https://tradebrains.in/money/40-of-indias-gcc-leasing-demand-is-in-bengaluru-top-micro-markets-where-home-prices-are-rising-12459066" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">GCC Expansion</span>
+    <span class="reliability-tag Medium">Medium</span>
+  </div>
+  <h3 class="company">See headline <span class="headline-note">(company not confidently identified — see headline)</span></h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Bengaluru, Hyderabad, Chennai, Pune and Delhi-NCR are positioned to benefit as GCC expansion broadens across sectors ...</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This expansion could increase This company's technology hiring demand in Bengaluru, making it worth approaching about talent needs.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">BusinessWorld</span>
+    <span class="published">Published: 28 Aug 2026</span>
+    <a class="read-original" href="https://www.businessworld.in/article/bfsi-drives-gcc-office-demand-in-india-transactions-surge-70-in-h1-2026-report-621366" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Hiring Expansion</span>
+    <span class="reliability-tag LowUnverified">⚠️ Low / Unverified</span>
+  </div>
+  <h3 class="company">Blackbaud</h3>
+  <p class="location">Hyderabad</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Blackbaud has opened a 45,000-square-foot second office in Hyderabad as it expands its India workforce across AI, cloud, technology and customer operations ...</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This is a direct hiring signal — Blackbaud appears to be growing its technology workforce in Hyderabad, which may create additional recruitment demand.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Ciol</span>
+    <span class="published">Published: 26 Aug 2026</span>
+    <a class="read-original" href="https://www.ciol.com/news/blackbaud-second-hyderabad-office-india-operations-expansion-12442607" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Technology Expansion</span>
+    <span class="reliability-tag Medium">Medium</span>
+  </div>
+  <h3 class="company">Bioforum The Data Masters</h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>The India GCC joins Bioforum's global operations across the United States, Europe, Colombia, and South Africa, strengthening the company's follow-the-sun delivery model and its ability to deliver ...</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This suggests Bioforum The Data Masters is growing its technology footprint in Bengaluru, which could create hiring opportunities worth monitoring.</p>
+  </div>
+  
+  <div class="also-reported">Also reported by: Finance.Yahoo</div>
+  
+  <div class="card-foot">
+    <span class="source">BioSpectrum India</span>
+    <span class="published">Published: 24 Aug 2026</span>
+    <a class="read-original" href="https://www.biospectrumindia.com/news/104/28369/bioforum-the-data-masters-expands-global-footprint-with-new-office-and-global-capability-center-in-bengaluru.html" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Technology Expansion</span>
+    <span class="reliability-tag LowUnverified">⚠️ Low / Unverified</span>
+  </div>
+  <h3 class="company">See headline <span class="headline-note">(company not confidently identified — see headline)</span></h3>
+  <p class="location">Hyderabad</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Hyderabad GCC growth is accelerating office demand while creating new needs for transport, housing, accessible workplaces and resilient urba.....</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This suggests This company is growing its technology footprint in Hyderabad, which could create hiring opportunities worth monitoring.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Urbanacres</span>
+    <span class="published">Published: 24 Aug 2026</span>
+    <a class="read-original" href="https://urbanacres.in/hyderabad-gcc-growth-reshapes-premium-office-demand/" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Technology Expansion</span>
+    <span class="reliability-tag LowUnverified">⚠️ Low / Unverified</span>
+  </div>
+  <h3 class="company">See headline <span class="headline-note">(company not confidently identified — see headline)</span></h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>From Bengaluru’s deep-tech ecosystem to Mohali’s liveability and UP’s AI ambitions, India’s next GCC battle is being fought on more than cost.</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This suggests This company is growing its technology footprint in Bengaluru, which could create hiring opportunities worth monitoring.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Msn</span>
+    <span class="published">Published: 23 Aug 2026</span>
+    <a class="read-original" href="https://www.msn.com/en-in/money/topstories/beyond-bengaluru-can-mohali-and-up-capture-india-s-next-gcc-wave/ar-AA2aN1UC" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Technology Expansion</span>
+    <span class="reliability-tag LowUnverified">⚠️ Low / Unverified</span>
+  </div>
+  <h3 class="company">JLL</h3>
+  <p class="location">Hyderabad</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Matthew Rees, Chief Shared Service Centre Officer, JLL Business Services, said Hyderabad was selected for its deep talent pool and ability to support JLL’s global operations. JBS operates across six ...</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This suggests JLL is growing its technology footprint in Hyderabad, which could create hiring opportunities worth monitoring.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Constructionworld</span>
+    <span class="published">Published: 23 Aug 2026</span>
+    <a class="read-original" href="https://www.constructionworld.in/policy-updates-and-economic-news/jll-opens-120000-sq-ft-global-capability-centre-in-hyderabad/96240" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Investment</span>
+    <span class="reliability-tag High">High</span>
+  </div>
+  <h3 class="company">PepsiCo</h3>
+  <p class="location">Hyderabad</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Hyderabad real estate deal: PepsiCo India Capability Center LLP will pay a monthly rent of nearly ₹53 lakh for the office space in Kokapet | Real Estate News</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This investment could translate into scaled-up technology operations for PepsiCo in Hyderabad, which may increase hiring demand over time.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Hindustan Times</span>
+    <span class="published">Published: 21 Aug 2026</span>
+    <a class="read-original" href="https://www.hindustantimes.com/real-estate/pepsico-leases-91-314-sq-ft-gcc-office-space-in-hyderabad-for-35-crore-over-5-years-101787224069848.html" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Technology Expansion</span>
+    <span class="reliability-tag LowUnverified">⚠️ Low / Unverified</span>
+  </div>
+  <h3 class="company">See headline <span class="headline-note">(company not confidently identified — see headline)</span></h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>Punjab Pitches Mohali as North India’s Next GCC Hub: Aman Arora Woos Global Giants in Bengaluru with Tier-1 Capability at Tier-2 Cost.</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This suggests This company is growing its technology footprint in Bengaluru, which could create hiring opportunities worth monitoring.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Livingindianews.Co</span>
+    <span class="published">Published: 21 Aug 2026</span>
+    <a class="read-original" href="https://livingindianews.co.in/punjab-pitches-mohali-as-north-indias-next-gcc-hub-aman-arora-woos-global-giants-in-bengaluru-with-tier-1-capability-at-tier-2-cost/" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">New Capability</span>
+    <span class="reliability-tag Medium">Medium</span>
+  </div>
+  <h3 class="company">IIT Hyderabad, Jindal Steel</h3>
+  <p class="location">Hyderabad</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>The Centre of Excellence (CoE) will incorporate IITH’s engineering and technical excellence with Jindal Steel’s expertise in manufacturing, metallurgy, and engineering to innovate and construct applications for high-strength, value-added and value-engineered steels.</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>A new capability or center of excellence at IIT Hyderabad, Jindal Steel in Hyderabad may require specialized technology talent — a potential fit for ViaMagus.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">The Indian Express</span>
+    <span class="published">Published: 21 Aug 2026</span>
+    <a class="read-original" href="https://indianexpress.com/article/education/iit-hyderabad-jindal-steel-set-up-centre-of-excellence-to-offer-internships-placement-opportunities-10843177/" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+        
+        <article class="card priority-relevant">
+  <div class="card-head">
+    <span class="signal-tag">Technology Expansion</span>
+    <span class="reliability-tag LowUnverified">⚠️ Low / Unverified</span>
+  </div>
+  <h3 class="company">See headline <span class="headline-note">(company not confidently identified — see headline)</span></h3>
+  <p class="location">Bengaluru</p>
+  <div class="field">
+    <span class="field-label">What happened</span>
+    <p>The US financial services firm is rapidly expanding its Bengaluru GCC, betting on AI, analytics and engineering talent as it shifts innovation capabilities in-house.</p>
+  </div>
+  <div class="field">
+    <span class="field-label">Why ViaMagus should care</span>
+    <p>This suggests This company is growing its technology footprint in Bengaluru, which could create hiring opportunities worth monitoring.</p>
+  </div>
+  
+  <div class="card-foot">
+    <span class="source">Peoplematters</span>
+    <span class="published">Published: 20 Aug 2026</span>
+    <a class="read-original" href="https://www.peoplematters.in/news/business/the-standard-grows-india-gcc-to-400-positioning-bengaluru-at-the-centre-of-its-innovation-strategy-51594" target="_blank" rel="noopener noreferrer">Read Original →</a>
+  </div>
+</article>
+      
+    </div>
+  </section>
+  
+</main>
+
+<footer class="report-footer">
+  Compiled from public news sources — Bing News search and named publisher RSS feeds.
+  Every link above points to the original article. Reliability tags reflect
+  source track record, not a claim about this specific story's accuracy.
+</footer>
+
+</body>
+</html>
